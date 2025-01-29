@@ -19,36 +19,6 @@ export async function GET() {
 // POST a new book
 export async function POST(req) {
   try {
-    if (!req.body) {
-      return NextResponse.json(
-        { error: "Empty request body" },
-        { status: 400 }
-      );
-    }
-    const data = await req.json();
-
-    const { title, author, genre, publishedYear } = data;
-    if (!title) {
-      return NextResponse.json({ error: "Title is required" }, { status: 422 });
-    }
-
-    if (!author) {
-      return NextResponse.json(
-        { error: "Author is required" },
-        { status: 422 }
-      );
-    }
-    await connectToDatabase();
-    const newBook = new Book({ title, author, genre, publishedYear });
-    await newBook.save();
-    return NextResponse.json(newBook, { status: 201 });
-  } catch (error) {
-    console.log("eeeeeeeeeee", error);
-    return NextResponse.json({ error }, { status: 500 });
-  }
-}
-export async function POST(req) {
-  try {
     console.log("Received request:", req.method);
 
     if (req.method !== "POST") {
@@ -58,15 +28,16 @@ export async function POST(req) {
       );
     }
 
-    // Ensure there is a body before parsing
-    if (!req.body) {
+    // Read request body safely
+    const bodyText = await req.text(); // Get raw text input
+    if (!bodyText) {
       return NextResponse.json(
         { error: "Empty request body" },
         { status: 400 }
       );
     }
 
-    const data = await req.json();
+    const data = JSON.parse(bodyText); // Convert text to JSON
     console.log("Parsed data:", data);
 
     const { title, author, genre, publishedYear } = data;
