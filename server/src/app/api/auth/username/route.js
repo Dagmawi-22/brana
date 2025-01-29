@@ -8,17 +8,49 @@ export async function GET(req) {
     const username = searchParams.get("username");
 
     if (!username) {
-      return NextResponse.json(
-        { error: "Username is required" },
-        { status: 400 }
+      return new NextResponse(
+        JSON.stringify({ error: "Username is required" }),
+        {
+          status: 400,
+          headers: {
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "GET, OPTIONS",
+            "Access-Control-Allow-Headers": "Content-Type, Authorization",
+          },
+        }
       );
     }
 
     await connectToDatabase();
-
     const existingUser = await User.findOne({ username });
-    return NextResponse.json({ exists: !!existingUser }, { status: 200 });
+
+    return new NextResponse(JSON.stringify({ exists: !!existingUser }), {
+      status: 200,
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization",
+      },
+    });
   } catch (error) {
-    return NextResponse.json({ error: "Server error" }, { status: 500 });
+    return new NextResponse(JSON.stringify({ error: "Server error" }), {
+      status: 500,
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization",
+      },
+    });
   }
+}
+
+export async function OPTIONS() {
+  return new NextResponse(null, {
+    status: 204,
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "GET, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type, Authorization",
+    },
+  });
 }

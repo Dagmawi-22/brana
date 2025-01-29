@@ -29,7 +29,9 @@ const Register = () => {
 
     try {
       // Check if username is unique
-      const usernameCheck = await api.get(`/auth?username=${username}`);
+      const usernameCheck = await api.get(
+        `/auth/username?username=${username}`
+      );
       if (usernameCheck.data.exists) {
         setFormErrors((prev) => ({
           ...prev,

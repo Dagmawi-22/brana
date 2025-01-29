@@ -6,6 +6,7 @@ import Layout from "../components/Layout";
 const Dashboard = () => {
   const navigate = useNavigate();
   const token = useAuthStore((state) => state.token);
+  const username = useAuthStore((state) => state.username);
 
   useEffect(() => {
     if (!token) {
@@ -15,7 +16,7 @@ const Dashboard = () => {
 
   return (
     <Layout>
-      <h2 className="text-3xl font-bold">Welcome to your Dashboard!</h2>
+      <h2 className="text-3xl font-bold">Welcome @{username}!</h2>
       <p className="mt-4">
         This is a protected page that only logged-in users can access.
       </p>

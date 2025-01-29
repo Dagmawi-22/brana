@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/mongodb";
 import Book from "@/models/Book";
 import { authGuard } from "@/app/middleware/auth";
-import cors from "@/lib/cors";
 
 async function getBooksHandler(req) {
   try {

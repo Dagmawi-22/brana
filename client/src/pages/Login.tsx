@@ -33,7 +33,7 @@ const Login = () => {
     setError(null);
 
     try {
-      const response = await api.post("/login", { username, password });
+      const response = await api.post("/auth/login", { username, password });
       setAuthData(response.data.username, response.data.token);
       navigate("/dashboard");
     } catch (error: any) {
