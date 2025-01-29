@@ -3,10 +3,12 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { connectToDatabase } from "@/lib/mongodb";
 import User from "@/models/User";
+import cors from "@/lib/cors";
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
 export async function POST(req) {
+  await cors(req, res);
   try {
     const { username, password } = await req.json();
     if (!username || !password) {
@@ -39,7 +41,10 @@ export async function POST(req) {
       }
     );
 
-    return NextResponse.json({ token }, { status: 200 });
+    return NextResponse.json(
+      { token, username: user.username },
+      { status: 200 }
+    );
   } catch (error) {
     return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
