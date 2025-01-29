@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/mongodb";
 import Book from "@/models/Book";
+import { authGuard } from "@/app/middleware/auth";
 
-// GET all books
-export async function GET() {
+async function getBooksHandler(req) {
   try {
     await connectToDatabase();
     const books = await Book.find({});
@@ -16,20 +16,13 @@ export async function GET() {
   }
 }
 
-// POST a new book
-export async function POST(req) {
+export const GET = authGuard(getBooksHandler);
+
+async function postBookHandler(req) {
   try {
     console.log("Received request:", req.method);
 
-    if (req.method !== "POST") {
-      return NextResponse.json(
-        { error: "Method Not Allowed" },
-        { status: 405 }
-      );
-    }
-
-    // Read request body safely
-    const bodyText = await req.text(); // Get raw text input
+    const bodyText = await req.text();
     if (!bodyText) {
       return NextResponse.json(
         { error: "Empty request body" },
@@ -37,7 +30,7 @@ export async function POST(req) {
       );
     }
 
-    const data = JSON.parse(bodyText); // Convert text to JSON
+    const data = JSON.parse(bodyText);
     console.log("Parsed data:", data);
 
     const { title, author, genre, publishedYear } = data;
@@ -61,3 +54,5 @@ export async function POST(req) {
     );
   }
 }
+
+export const POST = authGuard(postBookHandler);
