@@ -1,9 +1,11 @@
 import { NextResponse } from "next/server";
 import connectToDatabase from "@/lib/mongodb";
 import Book from "@/models/Book";
+import cors from "@/lib/cors";
 
 // GET a single book by ID
 export async function GET(_, { params }) {
+  await cors(req, res);
   try {
     await connectToDatabase();
     const book = await Book.findById(params.id);
@@ -20,6 +22,7 @@ export async function GET(_, { params }) {
 
 // UPDATE a book
 export async function PUT(req, { params }) {
+  await cors(req, res);
   try {
     const updateData = await req.json();
     await connectToDatabase();
