@@ -5,7 +5,6 @@ import { authGuard } from "@/app/middleware/auth";
 import cors from "@/lib/cors";
 
 async function getBooksHandler(req) {
-  await cors(req, res);
   try {
     await connectToDatabase();
     const books = await Book.find({});
@@ -21,7 +20,6 @@ async function getBooksHandler(req) {
 export const GET = authGuard(getBooksHandler);
 
 async function postBookHandler(req) {
-  await cors(req, res);
   try {
     console.log("Received request:", req.method);
 
