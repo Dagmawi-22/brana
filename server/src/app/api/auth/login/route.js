@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 import { connectToDatabase } from "@/lib/mongodb";
 import User from "@/models/User";
 
+export const runtime = "nodejs";
 const JWT_SECRET = process.env.JWT_SECRET;
 
 export async function POST(req) {
