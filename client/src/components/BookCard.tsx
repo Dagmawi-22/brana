@@ -1,5 +1,5 @@
 import React from "react";
-import { FaBook, FaCalendarAlt, FaTag } from "react-icons/fa";
+import { FaCalendarAlt, FaTag } from "react-icons/fa";
 
 interface Book {
   _id: string;
