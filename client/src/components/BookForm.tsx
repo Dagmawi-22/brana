@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { genres } from "../utils/constants";
 
 interface Book {
@@ -24,18 +24,62 @@ const BookFormPopup = ({
   setCustomGenre,
   book,
 }: BookFormPopupProps) => {
+  const currentYear = new Date().getFullYear();
+  const yearOptions = Array.from(
+    { length: currentYear - 1940 + 1 },
+    (_, index) => 1940 + index
+  );
+
+  const [errors, setErrors] = useState({
+    title: "",
+    author: "",
+    genre: "",
+    publishedYear: "",
+  });
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const bookData: Omit<Book, "_id"> = {
-      title: (e.target as any).title.value,
-      author: (e.target as any).author.value,
-      genre:
-        (e.target as any).genre.value === "Custom"
-          ? customGenre
-          : (e.target as any).genre.value,
-      publishedYear: Number((e.target as any).publishedYear.value),
-    };
-    onSubmit(bookData);
+
+    const title = (e.target as any).title.value;
+    const author = (e.target as any).author.value;
+    const genre =
+      (e.target as any).genre.value === "Custom"
+        ? customGenre
+        : (e.target as any).genre.value;
+    const publishedYear = Number((e.target as any).publishedYear.value);
+
+    // Form validation
+    let formIsValid = true;
+    let errors = { title: "", author: "", genre: "", publishedYear: "" };
+
+    if (!title) {
+      errors.title = "Title is required.";
+      formIsValid = false;
+    }
+    if (!author) {
+      errors.author = "Author is required.";
+      formIsValid = false;
+    }
+    if (!genre) {
+      errors.genre = "Genre is required.";
+      formIsValid = false;
+    }
+    if (!publishedYear) {
+      errors.publishedYear = "Published Year is required.";
+      formIsValid = false;
+    }
+
+    setErrors(errors);
+
+    if (formIsValid) {
+      const bookData: Omit<Book, "_id"> = {
+        title,
+        author,
+        genre,
+        publishedYear,
+      };
+      onSubmit(bookData);
+    }
   };
 
   return (
@@ -45,7 +89,7 @@ const BookFormPopup = ({
           {book ? "Edit Book" : "Add New Book"}
         </h3>
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Form Fields */}
+          {/* Title */}
           <div>
             <label
               htmlFor="title"
@@ -61,7 +105,12 @@ const BookFormPopup = ({
               required
               className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
+            {errors.title && (
+              <small className="text-red-500 mt-1 block">{errors.title}</small>
+            )}
           </div>
+
+          {/* Author */}
           <div>
             <label
               htmlFor="author"
@@ -77,7 +126,12 @@ const BookFormPopup = ({
               required
               className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
+            {errors.author && (
+              <small className="text-red-500 mt-1 block">{errors.author}</small>
+            )}
           </div>
+
+          {/* Genre */}
           <div>
             <label
               htmlFor="genre"
@@ -100,6 +154,9 @@ const BookFormPopup = ({
               ))}
               <option value="Custom">Custom</option>
             </select>
+            {errors.genre && (
+              <small className="text-red-500 mt-1 block">{errors.genre}</small>
+            )}
             {customGenre && (
               <input
                 type="text"
@@ -110,6 +167,8 @@ const BookFormPopup = ({
               />
             )}
           </div>
+
+          {/* Published Year */}
           <div>
             <label
               htmlFor="publishedYear"
@@ -117,14 +176,28 @@ const BookFormPopup = ({
             >
               Published Year
             </label>
-            <input
+            <select
               id="publishedYear"
               name="publishedYear"
-              type="number"
               defaultValue={book?.publishedYear}
+              required
               className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
+            >
+              <option value="">Select Year</option>
+              {yearOptions.map((year) => (
+                <option key={year} value={year}>
+                  {year}
+                </option>
+              ))}
+            </select>
+            {errors.publishedYear && (
+              <small className="text-red-500 mt-1 block">
+                {errors.publishedYear}
+              </small>
+            )}
           </div>
+
+          {/* Buttons */}
           <div className="flex justify-end space-x-4 mt-4">
             <button
               type="button"
