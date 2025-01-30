@@ -6,7 +6,7 @@ import BookCard from "../components/BookCard";
 import { genres } from "../utils/constants";
 import Header from "../components/Header";
 import GenreTabs from "../components/GenreTabs";
-import DeleteConfirmationModal from "../components/COnfirmModal";
+import DeleteConfirmationModal from "../components/ConfirmModal";
 import BookFormPopup from "../components/BookForm";
 
 interface Book {
