@@ -33,7 +33,6 @@ export const GET = authGuard(getBooksHandler);
 
 async function postBookHandler(req) {
   try {
-    console.log("Received request:", req.method);
 
     const bodyText = await req.text();
     if (!bodyText) {
@@ -45,7 +44,6 @@ async function postBookHandler(req) {
     }
 
     const data = JSON.parse(bodyText);
-    console.log("Parsed data:", data);
 
     const { title, author, genre, publishedYear } = data;
     if (!title || !author) {
@@ -53,7 +51,7 @@ async function postBookHandler(req) {
         { error: "Title and Author are required" },
         { status: 422 }
       );
-      return addCorsHeaders(response); // Add CORS headers
+      return addCorsHeaders(response);
     }
 
     await connectToDatabase();
@@ -61,14 +59,13 @@ async function postBookHandler(req) {
     await newBook.save();
 
     const response = NextResponse.json(newBook, { status: 201 });
-    return addCorsHeaders(response); // Add CORS headers
+    return addCorsHeaders(response);
   } catch (error) {
-    console.error("Error in POST /api/books:", error);
     const response = NextResponse.json(
       { error: "Internal Server Error" },
       { status: 500 }
     );
-    return addCorsHeaders(response); // Add CORS headers
+    return addCorsHeaders(response);
   }
 }
 
