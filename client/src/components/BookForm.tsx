@@ -89,7 +89,6 @@ const BookFormPopup = ({
           {book ? "Edit Book" : "Add New Book"}
         </h3>
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Title */}
           <div>
             <label
               htmlFor="title"
@@ -110,7 +109,6 @@ const BookFormPopup = ({
             )}
           </div>
 
-          {/* Author */}
           <div>
             <label
               htmlFor="author"
@@ -131,7 +129,6 @@ const BookFormPopup = ({
             )}
           </div>
 
-          {/* Genre */}
           <div>
             <label
               htmlFor="genre"
@@ -168,7 +165,6 @@ const BookFormPopup = ({
             )}
           </div>
 
-          {/* Published Year */}
           <div>
             <label
               htmlFor="publishedYear"
