@@ -1,6 +1,8 @@
 # brana
 
 #### A simple React.js, Tailwind Css, Nest.js, mongodb app with book management features including authetication
+
+![image](https://github.com/user-attachments/assets/80507d02-6a56-4e49-acc2-8bfabc10a818)
 ![image](https://github.com/user-attachments/assets/d5dcf60e-74bd-4f5c-826d-ca23c2dfcc76)
 ![image](https://github.com/user-attachments/assets/531a9316-5c4b-49f4-963e-84d6b7826dba)
 
