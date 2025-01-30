@@ -1,5 +1,5 @@
 import React from "react";
-import { FaPlus, FaSignOutAlt } from "react-icons/fa"; // Using react-icons for the icons
+import { FaPlus, FaSignOutAlt } from "react-icons/fa";
 
 interface HeaderProps {
   username: string;

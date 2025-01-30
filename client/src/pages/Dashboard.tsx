@@ -5,6 +5,7 @@ import api from "../utils/axiosInstance";
 import BookCard from "../components/BookCard";
 import { genres } from "../utils/constants";
 import Header from "../components/Header";
+import GenreTabs from "../components/GenreTabs";
 
 interface Book {
   _id: string;
@@ -108,61 +109,17 @@ const MyBooks = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 p-4 sm:p-8">
-      {/* Profile Header */}
-      {/* <div className="flex items-center justify-between mb-8">
-        <div className="flex items-center space-x-4">
-          <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center text-white text-xl font-bold shadow-lg">
-            {username?.charAt(0).toUpperCase()}
-          </div>
-          <div>
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">
-              Welcome, {username}!
-            </h2>
-            <p className="text-sm text-gray-600">
-              Manage your personal bookshelf.
-            </p>
-          </div>
-        </div>
-        <div className="flex items-center space-x-4">
-          <button
-            className="px-6 py-3 bg-blue-500 text-white rounded-full shadow-lg hover:bg-blue-600 transition-all"
-            onClick={() => setShowAddBookPopup(true)}
-          >
-            + Add New Book
-          </button>
-          <button
-            className="px-6 py-3 bg-red-500 text-white rounded-full shadow-lg hover:bg-red-600 transition-all"
-            onClick={handleLogout}
-          >
-            Logout
-          </button>
-        </div>
-      </div> */}
-
       <Header
         username={username as string}
         setShowAddBookPopup={setShowAddBookPopup}
         handleLogout={handleLogout}
       />
+      <GenreTabs
+        genres={genres}
+        activeGenre={activeGenre}
+        onSelect={setActiveGenre}
+      />
 
-      {/* Genre Tabs */}
-      <div className="flex flex-wrap justify-center gap-2 mb-8">
-        {genres.map((genre) => (
-          <button
-            key={genre}
-            onClick={() => setActiveGenre(genre)}
-            className={`px-4 py-2 text-sm sm:text-base rounded-full transition-all ${
-              activeGenre === genre
-                ? "bg-blue-500 text-white shadow-lg"
-                : "bg-white text-gray-700 hover:bg-gray-100 shadow-sm"
-            }`}
-          >
-            {genre}
-          </button>
-        ))}
-      </div>
-
-      {/* Book List */}
       <div className="mt-6 sm:mt-8">
         {loading ? (
           <p className="text-center text-gray-600">Loading books...</p>
@@ -190,7 +147,6 @@ const MyBooks = () => {
         )}
       </div>
 
-      {/* Add Book Popup */}
       {showAddBookPopup && (
         <BookFormPopup
           onClose={() => setShowAddBookPopup(false)}
@@ -200,7 +156,6 @@ const MyBooks = () => {
         />
       )}
 
-      {/* Edit Book Popup */}
       {showEditBookPopup && (
         <BookFormPopup
           onClose={() => setShowEditBookPopup(false)}
@@ -211,7 +166,6 @@ const MyBooks = () => {
         />
       )}
 
-      {/* Delete Confirmation Modal */}
       {showDeleteModal && (
         <DeleteConfirmationModal
           onClose={() => setShowDeleteModal(false)}
