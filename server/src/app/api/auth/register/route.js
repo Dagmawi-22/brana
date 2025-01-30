@@ -5,7 +5,10 @@ import User from "@/models/User";
 
 export async function POST(req) {
   try {
+    // Parse incoming request
     const { username, password } = await req.json();
+
+    // Check if fields are missing
     if (!username || !password) {
       return new NextResponse(JSON.stringify({ error: "Missing fields" }), {
         status: 400,
@@ -17,8 +20,10 @@ export async function POST(req) {
       });
     }
 
+    // Connect to the database
     await connectToDatabase();
 
+    // Check if the username already exists
     const existingUser = await User.findOne({ username });
     if (existingUser) {
       return new NextResponse(
@@ -34,10 +39,31 @@ export async function POST(req) {
       );
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = new User({ username, password: hashedPassword });
-    await newUser.save();
+    // Hash the password before saving
 
+    try {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const newUser = new User({ username, password: hashedPassword });
+      await newUser.save();
+    } catch (error) {
+      // Check for validation errors
+      return new NextResponse(
+        JSON.stringify({
+          error: "Server error",
+          details: error.message,
+        }),
+        {
+          status: 500,
+          headers: {
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "POST, OPTIONS",
+            "Access-Control-Allow-Headers": "Content-Type, Authorization",
+          },
+        }
+      );
+    }
+
+    // Send a successful response
     return new NextResponse(
       JSON.stringify({ message: "User created successfully" }),
       {
@@ -50,14 +76,18 @@ export async function POST(req) {
       }
     );
   } catch (error) {
-    return new NextResponse(JSON.stringify({ error: "Server error" }), {
-      status: 500,
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "POST, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type, Authorization",
-      },
-    });
+    // Return a server error response
+    return new NextResponse(
+      JSON.stringify({ error: "Server error", details: error.message }),
+      {
+        status: 500,
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "POST, OPTIONS",
+          "Access-Control-Allow-Headers": "Content-Type, Authorization",
+        },
+      }
+    );
   }
 }
 
