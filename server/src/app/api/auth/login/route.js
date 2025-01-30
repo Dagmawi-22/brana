@@ -10,40 +10,84 @@ export async function POST(req) {
   try {
     const { username, password } = await req.json();
     if (!username || !password) {
-      return NextResponse.json({ error: "Missing fields" }, { status: 400 });
+      return new NextResponse(JSON.stringify({ error: "Missing fields" }), {
+        status: 400,
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "POST, OPTIONS",
+          "Access-Control-Allow-Headers": "Content-Type, Authorization",
+        },
+      });
     }
 
     await connectToDatabase();
 
     const user = await User.findOne({ username });
     if (!user) {
-      return NextResponse.json(
-        { error: "Invalid credentials" },
-        { status: 401 }
+      return new NextResponse(
+        JSON.stringify({ error: "Invalid credentials" }),
+        {
+          status: 401,
+          headers: {
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "POST, OPTIONS",
+            "Access-Control-Allow-Headers": "Content-Type, Authorization",
+          },
+        }
       );
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return NextResponse.json(
-        { error: "Invalid credentials" },
-        { status: 401 }
+      return new NextResponse(
+        JSON.stringify({ error: "Invalid credentials" }),
+        {
+          status: 401,
+          headers: {
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "POST, OPTIONS",
+            "Access-Control-Allow-Headers": "Content-Type, Authorization",
+          },
+        }
       );
     }
 
     const token = jwt.sign(
       { userId: user._id, username: user.username },
       JWT_SECRET,
-      {
-        expiresIn: "1h",
-      }
+      { expiresIn: "1h" }
     );
 
-    return NextResponse.json(
-      { token, username: user.username },
-      { status: 200 }
+    return new NextResponse(
+      JSON.stringify({ token, username: user.username }),
+      {
+        status: 200,
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "POST, OPTIONS",
+          "Access-Control-Allow-Headers": "Content-Type, Authorization",
+        },
+      }
     );
   } catch (error) {
-    return NextResponse.json({ error: "Server error" }, { status: 500 });
+    return new NextResponse(JSON.stringify({ error: "Server error" }), {
+      status: 500,
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "POST, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization",
+      },
+    });
   }
+}
+
+export async function OPTIONS() {
+  return new NextResponse(null, {
+    status: 204,
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "POST, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type, Authorization",
+    },
+  });
 }

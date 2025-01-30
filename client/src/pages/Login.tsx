@@ -6,17 +6,22 @@ import { useAuthStore } from "../store/authStore";
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
   const [formErrors, setFormErrors] = useState<{
     username?: string;
     password?: string;
   }>({});
+  const [loading, setLoading] = useState(false);
+  const [popup, setPopup] = useState<{
+    message: string;
+    type: "success" | "error";
+  } | null>(null);
   const navigate = useNavigate();
-  const setAuthData = useAuthStore((state) => state.login);
 
   const validateForm = () => {
-    const errors: { username?: string; password?: string } = {};
+    const errors: {
+      username?: string;
+      password?: string;
+    } = {};
     if (!username) errors.username = "Username is required";
     if (!password) errors.password = "Password is required";
     return errors;
@@ -26,31 +31,39 @@ const Login = () => {
     e.preventDefault();
     const errors = validateForm();
     setFormErrors(errors);
-
     if (Object.keys(errors).length > 0) return;
 
     setLoading(true);
-    setError(null);
-
     try {
-      const response = await api.post("/login", { username, password });
-      setAuthData(response.data.username, response.data.token);
-      navigate("/dashboard");
+      const res = await api.post("/auth/login", { username, password });
+      setPopup({
+        message: "✅ Login successful! Redirecting...",
+        type: "success",
+      });
+      setTimeout(() => {
+        const { token } = res.data;
+        useAuthStore.getState().login(username, token);
+      }, 3000);
     } catch (error: any) {
-      setError(error.response?.data?.message || "Login failed");
+      console.error("Login error:", error);
+      setPopup({
+        message: error.response?.data?.message || "Login failed",
+        type: "error",
+      });
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-teal-300 to-blue-200">
-      <div className="max-w-md w-full p-8 bg-white shadow-lg rounded-2xl">
-        <h2 className="text-3xl font-semibold text-center text-teal-800 mb-6">
-          Welcome Back to Brana!
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-teal-300 to-blue-200 relative">
+      <div className="max-w-md w-full p-8 bg-white shadow-md rounded-md animate-fade-in">
+        <h2 className="text-3xl font-bold text-center text-teal-800 mb-4">
+          Welcome Back! 👋
         </h2>
-
-        {error && <div className="text-red-500 text-center mb-4">{error}</div>}
+        <p className="text-sm text-center text-gray-500 mb-6">
+          Log in to your account
+        </p>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
@@ -87,9 +100,11 @@ const Login = () => {
 
           <button
             type="submit"
-            className={`w-full cursor-pointer py-3 text-white font-semibold rounded-lg ${
-              loading ? "bg-gray-400" : "bg-teal-600 hover:bg-teal-700"
-            } transition duration-300`}
+            className={`w-full cursor-pointer py-3 text-white font-semibold rounded-lg transition duration-300 ${
+              loading
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-green-500 hover:bg-green-600"
+            }`}
             disabled={loading}
           >
             {loading ? "Logging in..." : "Login"}
@@ -98,16 +113,27 @@ const Login = () => {
 
         <div className="mt-6 text-center">
           <p className="text-sm text-gray-500">
-            Don’t have an account?{" "}
+            Don't have an account?{" "}
             <span
               className="text-teal-600 cursor-pointer"
               onClick={() => navigate("/register")}
             >
-              Sign Up
+              Register
             </span>
           </p>
         </div>
       </div>
+
+      {popup && (
+        <div className="fixed top-10 right-10 bg-white shadow-lg rounded-lg px-6 py-3 flex items-center gap-2 transition-all duration-300 animate-slide-up">
+          {popup.type === "success" ? (
+            <span className="text-green-500 text-xl">✔️</span>
+          ) : (
+            <span className="text-red-500 text-xl">❌</span>
+          )}
+          <p className="text-sm font-medium text-gray-800">{popup.message}</p>
+        </div>
+      )}
     </div>
   );
 };
