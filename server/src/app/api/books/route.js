@@ -3,9 +3,10 @@ import { connectToDatabase } from "@/lib/mongodb";
 import Book from "@/models/Book";
 import { authGuard } from "@/app/middleware/auth";
 
+// Function to add CORS headers
 function addCorsHeaders(res) {
   res.headers.set("Access-Control-Allow-Origin", "*"); // Allow all origins
-  res.headers.set("Access-Control-Allow-Methods", "POST, OPTIONS"); // Allow only POST and OPTIONS methods
+  res.headers.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS"); // Allow GET, POST, and OPTIONS methods
   res.headers.set(
     "Access-Control-Allow-Headers",
     "Content-Type, Authorization"
@@ -72,3 +73,15 @@ async function postBookHandler(req) {
 }
 
 export const POST = authGuard(postBookHandler);
+
+// Handle OPTIONS request
+export async function OPTIONS() {
+  return new NextResponse(null, {
+    status: 204,
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type, Authorization",
+    },
+  });
+}
