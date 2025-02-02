@@ -37,7 +37,9 @@ const BookFormPopup = ({
     publishedYear: "",
   });
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const title = (e.target as any).title.value;
@@ -48,7 +50,6 @@ const BookFormPopup = ({
         : (e.target as any).genre.value;
     const publishedYear = Number((e.target as any).publishedYear.value);
 
-    // Form validation
     let formIsValid = true;
     let errors = { title: "", author: "", genre: "", publishedYear: "" };
 
@@ -72,13 +73,21 @@ const BookFormPopup = ({
     setErrors(errors);
 
     if (formIsValid) {
+      setLoading(true);
       const bookData: Omit<Book, "_id"> = {
         title,
         author,
         genre,
         publishedYear,
       };
-      onSubmit(bookData);
+
+      try {
+        onSubmit(bookData);
+      } catch (error) {
+        console.error("Error submitting form:", error);
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
@@ -193,20 +202,25 @@ const BookFormPopup = ({
             )}
           </div>
 
-          {/* Buttons */}
           <div className="flex justify-end space-x-4 mt-4">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400 transition-all"
+              disabled={loading}
+              className={`px-4 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400 transition-all ${
+                loading ? "opacity-50 cursor-not-allowed" : ""
+              }`}
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-all"
+              disabled={loading}
+              className={`px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-all ${
+                loading ? "opacity-50 cursor-not-allowed" : ""
+              }`}
             >
-              {book ? "Save Changes" : "Add Book"}
+              {loading ? "Submitting..." : book ? "Save Changes" : "Add Book"}
             </button>
           </div>
         </form>
