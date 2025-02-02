@@ -54,6 +54,38 @@ const MyBooks = () => {
     setTimeout(() => setLoading(false), 2000);
   };
 
+  const handleAddBook = async (bookData: Omit<Book, "_id">) => {
+    try {
+      await api.post("/books", bookData);
+      fetchBooks();
+      setShowAddBookPopup(false);
+    } catch (error) {
+      console.error("Error adding book:", error);
+    }
+  };
+
+  const handleEditBook = async (bookData: Omit<Book, "_id">) => {
+    if (!selectedBook) return;
+    try {
+      await api.put(`/books/${selectedBook._id}`, bookData);
+      fetchBooks();
+      setShowEditBookPopup(false);
+    } catch (error) {
+      console.error("Error editing book:", error);
+    }
+  };
+
+  const handleDeleteBook = async () => {
+    if (!bookToDelete) return;
+    try {
+      await api.delete(`/books/${bookToDelete._id}`);
+      fetchBooks();
+      setShowDeleteModal(false);
+    } catch (error) {
+      console.error("Error deleting book:", error);
+    }
+  };
+
   useEffect(() => {
     fetchBooks();
   }, []);
@@ -93,10 +125,7 @@ const MyBooks = () => {
       />
 
       <div className="mt-4">
-        <SearchBar
-          searchQuery={searchQuery}
-          setSearchQuery={handleSearch}
-        />
+        <SearchBar searchQuery={searchQuery} setSearchQuery={handleSearch} />
       </div>
 
       <div className="mt-6 sm:mt-8">
@@ -131,7 +160,7 @@ const MyBooks = () => {
       {showAddBookPopup && (
         <BookFormPopup
           onClose={() => setShowAddBookPopup(false)}
-          onSubmit={() => {}}
+          onSubmit={handleAddBook}
           customGenre={customGenre}
           setCustomGenre={setCustomGenre}
         />
@@ -140,7 +169,7 @@ const MyBooks = () => {
       {showEditBookPopup && (
         <BookFormPopup
           onClose={() => setShowEditBookPopup(false)}
-          onSubmit={() => {}}
+          onSubmit={handleEditBook}
           customGenre={customGenre}
           setCustomGenre={setCustomGenre}
           book={selectedBook as Book}
@@ -150,7 +179,7 @@ const MyBooks = () => {
       {showDeleteModal && (
         <DeleteConfirmationModal
           onClose={() => setShowDeleteModal(false)}
-          onConfirm={() => {}}
+          onConfirm={handleDeleteBook}
         />
       )}
     </div>
