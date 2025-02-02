@@ -8,6 +8,7 @@ import Header from "../components/Header";
 import GenreTabs from "../components/GenreTabs";
 import DeleteConfirmationModal from "../components/ConfirmModal";
 import BookFormPopup from "../components/BookForm";
+import SkeletonBookCard from "../components/SkeletonBookCard";
 
 interface Book {
   _id: string;
@@ -40,17 +41,14 @@ const MyBooks = () => {
   }, [token, navigate]);
 
   const fetchBooks = async () => {
+    setLoading(true);
     try {
       const response = await api.get("/books");
       setBooks(response.data);
-
-      setTimeout(() => {
-        setLoading(false);
-      }, 2000);
     } catch (error) {
       console.error("Error fetching books:", error);
-      setLoading(false);
     }
+    setTimeout(() => setLoading(false), 2000);
   };
 
   const handleAddBook = async (bookData: Omit<Book, "_id">) => {
@@ -94,6 +92,11 @@ const MyBooks = () => {
     fetchBooks();
   }, []);
 
+  useEffect(() => {
+    setLoading(true);
+    setTimeout(() => setLoading(false), 1500);
+  }, [activeGenre]);
+
   const filteredBooks =
     activeGenre === "All"
       ? books
@@ -112,14 +115,14 @@ const MyBooks = () => {
         onSelect={setActiveGenre}
       />
 
-      {loading && (
-        <div className="absolute inset-0 flex justify-center items-center bg-opacity-70 bg-gray-100 z-50">
-          <div className="animate-spin border-t-4 border-b-4 border-blue-500 w-16 h-16 rounded-full"></div>
-        </div>
-      )}
-
       <div className="mt-6 sm:mt-8">
-        {!loading && filteredBooks.length === 0 ? (
+        {loading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+            {Array.from({ length: 6 }).map((_, index) => (
+              <SkeletonBookCard key={index} />
+            ))}
+          </div>
+        ) : filteredBooks.length === 0 ? (
           <p className="text-center text-gray-600">
             No books found in this genre.
           </p>
