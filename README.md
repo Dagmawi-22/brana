@@ -1,7 +1,7 @@
 # brana
 
 
-https://brana-zjuw.vercel.app/
+[https://brana-dt.vercel.app/](https://brana-dt.vercel.app/)
 
 #### A simple React.js, Tailwind Css, Nest.js, mongodb app with book management features including authetication
 
